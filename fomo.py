@@ -56,27 +56,7 @@ def init_db_and_admin():
         db.create_all()
         print("✅ Database tables created successfully!")
 
-        # Ensure admin exists
-        admin = User.query.filter_by(is_admin=True).first()
-        if not admin:
-            admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
-            admin_email = os.environ.get('ADMIN_EMAIL', 'admin@foodmood.com')
-            admin_password = os.environ.get('ADMIN_PASSWORD', 'Rihu@2004')
-
-            admin_user = User(
-                username=admin_username,
-                email=admin_email,
-                password_hash=generate_password_hash(admin_password),
-                is_admin=True,
-                age=25,
-                gender='other',
-                is_active=True
-            )
-            db.session.add(admin_user)
-            db.session.commit()
-            print(f"✅ Admin created: {admin_email} / {admin_password}")
-        else:
-            print(f"ℹ️ Admin already exists: {admin.username} ({admin.email})")
+       
 
 # Your Foursquare Service Key
 SERVICE_KEY = os.environ.get('FOURSQUARE_API_KEY', 'fallback-key')
@@ -808,7 +788,7 @@ def send_welcome_email(user_data):
         ---
         🍽️ Food Mood - AI-Powered Mood-Based Discovery
         📧 Support: Reply to this email for any assistance
-        🌐 Platform: https://your-foodmood-domain.com
+        🌐 Platform: https://foodmood-fr4h.onrender.com
         
         P.S. Don't forget to try our "rainy day" mood search - it's perfect for monsoon season! ☔
         
