@@ -40,6 +40,49 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+from werkzeug.security import generate_password_hash
+
+@app.before_first_request
+def init_db_and_admin():
+    """Create tables and ensure admin exists (runs once on first request)"""
+    with app.app_context():
+        # Create all tables if they don't exist
+        db.create_all()
+        print("✅ Database tables created successfully!")
+
+        # Check if an admin already exists
+        admin = User.query.filter_by(is_admin=True).first()
+        if not admin:
+            # Get admin details from environment or use defaults
+            admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
+            admin_email = os.environ.get('ADMIN_EMAIL', 'admin@foodmood.com')
+            admin_password = os.environ.get('ADMIN_PASSWORD', 'Rihu@2004')  # change this in ENV on Render
+
+            admin_user = User(
+                username=admin_username,
+                email=admin_email,
+                password_hash=generate_password_hash(admin_password),
+                is_admin=True,
+                age=25,
+                gender='other',
+                is_active=True
+            )
+
+            try:
+                db.session.add(admin_user)
+                db.session.commit()
+                print(f"✅ Admin created successfully!")
+                print(f"   Username: {admin_username}")
+                print(f"   Email: {admin_email}")
+                print(f"   Password: {admin_password}")
+                print("⚠️ Please change the password after first login!")
+            except Exception as e:
+                db.session.rollback()
+                print(f"❌ Error creating admin: {str(e)}")
+        else:
+            print(f"ℹ️ Admin already exists: {admin.username} ({admin.email})")
+
+
 # Your Foursquare Service Key
 SERVICE_KEY = os.environ.get('FOURSQUARE_API_KEY', 'fallback-key')
 
