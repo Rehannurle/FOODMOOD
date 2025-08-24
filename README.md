@@ -592,7 +592,7 @@ copies or substantial portions of the Software.
 
 ### **Developer**
 **Rehan Nurle** - *Creator & Lead Developer*
-- 📧 Email: [Contact via GitHub](https://github.com/Rehannurle)
+- 📧 Email: rehannurle28@gmail.com
 - 💼 LinkedIn: [Connect with Rehan](https://linkedin.com/in/rehannurle)
 - 🐙 GitHub: [@Rehannurle](https://github.com/Rehannurle)
 
