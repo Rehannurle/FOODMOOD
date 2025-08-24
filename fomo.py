@@ -44,17 +44,44 @@ from werkzeug.security import generate_password_hash
 
 has_initialized = False
 
+# 📌 Database init + Admin auto-create
+from werkzeug.security import generate_password_hash
+
+has_initialized = False
+
 @app.before_request
-def init_db():
+def init_db_and_admin():
     global has_initialized
     if has_initialized:
         return
     has_initialized = True
 
     with app.app_context():
-        # Create tables if they don't exist
+        # Tables create karo
         db.create_all()
-        print("✅ Database tables checked/created successfully!")
+        print("✅ Database tables checked/created!")
+
+        # Admin ensure karo
+        admin = User.query.filter_by(is_admin=True).first()
+        if not admin:
+            admin_username = os.environ.get('ADMIN_USERNAME', 'admin')
+            admin_email = os.environ.get('ADMIN_EMAIL', 'admin@foodmood.com')
+            admin_password = os.environ.get('ADMIN_PASSWORD', 'Rihu@2004')
+
+            admin_user = User(
+                username=admin_username,
+                email=admin_email,
+                password_hash=generate_password_hash(admin_password),
+                is_admin=True,
+                age=25,
+                gender='other',
+                is_active=True
+            )
+            db.session.add(admin_user)
+            db.session.commit()
+            print(f"✅ Admin created: {admin_email} / {admin_password}")
+        else:
+            print(f"ℹ️ Admin already exists: {admin.username} ({admin.email})")
 
 
 
