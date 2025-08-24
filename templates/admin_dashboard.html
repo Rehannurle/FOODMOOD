@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Food Mood</title>
+    <!-- Favicon setup -->
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='favicon_io/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='favicon_io/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='favicon_io/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon_io/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon_io/favicon.ico') }}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+            --info: #3b82f6;
+
+            --black: #0f0f23;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+
+            --shadow-lg: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --blur: 20px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: var(--white);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-hero);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .header-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 700;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.9rem;
+        }
+
+        .btn:hover {
+            background: var(--gradient-3);
+            border-color: transparent;
+            transform: translateY(-2px);
+        }
+
+        .btn.primary {
+            background: var(--gradient-1);
+            border-color: transparent;
+        }
+
+        .btn.danger {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .btn.danger:hover {
+            background: var(--error);
+            color: var(--white);
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat-number {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            color: var(--white);
+        }
+
+        .stat-label {
+            color: var(--gray-300);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-change {
+            font-size: 0.875rem;
+            font-weight: 600;
+            padding: 0.25rem 0.5rem;
+            border-radius: 6px;
+        }
+
+        .stat-change.positive {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .stat-change.negative {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .tab {
+            padding: 0.875rem 1.5rem;
+            background: transparent;
+            border: none;
+            color: var(--gray-300);
+            font-weight: 600;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .tab.active {
+            background: var(--gradient-1);
+            color: var(--white);
+        }
+
+        .content-section {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        .section-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--white);
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .data-table th {
+            background: rgba(255, 255, 255, 0.05);
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .data-table td {
+            color: var(--gray-300);
+        }
+
+        .data-table tr:hover {
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .badge {
+            padding: 0.375rem 0.75rem;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge.active {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .badge.inactive {
+            background: rgba(239, 68, 68, 0.15);
+            color: var(--error);
+        }
+
+        .badge.new {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--info);
+        }
+
+        .badge.reviewed {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+        }
+
+        .badge.resolved {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--success);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--gray-400);
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .search-box {
+            width: 300px;
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: var(--white);
+            margin-bottom: 1rem;
+        }
+
+        .search-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .filter-select {
+            padding: 0.75rem 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: var(--white);
+            margin-right: 1rem;
+        }
+
+        .filter-select option {
+            background: var(--gray-800);
+            color: var(--white);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 2rem;
+        }
+
+        .pagination button {
+            padding: 0.5rem 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: var(--white);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .pagination button:hover:not(:disabled) {
+            background: var(--primary);
+        }
+
+        .pagination button.active {
+            background: var(--primary);
+        }
+
+        .pagination button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            max-width: 800px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--white);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .form-input,
+        .form-textarea,
+        .form-select {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: var(--white);
+            font-family: inherit;
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            justify-content: flex-end;
+        }
+
+        .alert {
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            font-weight: 500;
+        }
+
+        .alert.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
+        }
+
+        .alert.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .tabs {
+                flex-wrap: wrap;
+            }
+
+            .search-box {
+                width: 100%;
+            }
+
+            .data-table {
+                font-size: 0.875rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="header-left">
+                <div class="logo">🛡️</div>
+                <div class="header-title">Admin Dashboard</div>
+            </div>
+            <div class="header-actions">
+                <a href="/" class="btn">🍽️ Main App</a>
+                <button class="btn danger" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="loading">
+                <div class="spinner"></div>
+                Loading statistics...
+            </div>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('users')">👥 Users</button>
+            <button class="tab" onclick="showTab('feedback')">💬 Feedback</button>
+            <button class="tab" onclick="showTab('activities')">📊 Activities</button>
+            <button class="tab" onclick="showTab('analytics')">📈 Analytics</button>
+            <button class="tab" onclick="showTab('export')">📦 Export</button>
+        </div>
+         
+        
+
+        <!-- Users Section -->
+        <div class="content-section active" id="users-section">
+            <div class="section-title">User Management</div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                <input type="text" class="search-box" placeholder="Search users..." id="userSearch">
+                <button class="btn primary" onclick="refreshUsers()">🔄 Refresh</button>
+            </div>
+
+            <div id="usersContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading users...
+                </div>
+            </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="content-section" id="feedback-section">
+            <div class="section-title">Feedback Management</div>
+
+            <div style="display: flex; gap: 1rem; margin-bottom: 2rem; flex-wrap: wrap;">
+                <select class="filter-select" id="feedbackStatusFilter">
+                    <option value="all">All Status</option>
+                    <option value="new">New</option>
+                    <option value="reviewed">Reviewed</option>
+                    <option value="resolved">Resolved</option>
+                </select>
+                <select class="filter-select" id="feedbackTypeFilter">
+                    <option value="all">All Types</option>
+                    <option value="bug">Bug</option>
+                    <option value="feature">Feature</option>
+                    <option value="improvement">Improvement</option>
+                    <option value="general">General</option>
+                    <option value="compliment">Compliment</option>
+                    <option value="complaint">Complaint</option>
+                </select>
+                <button class="btn primary" onclick="refreshFeedback()">🔄 Refresh</button>
+            </div>
+
+            <div id="feedbackContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading feedback...
+                </div>
+            </div>
+        </div>
+
+        <!-- Activities Section -->
+        <div class="content-section" id="activities-section">
+            <div class="section-title">Admin Activities</div>
+            <div id="activitiesContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading activities...
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Section -->
+        <div class="content-section" id="analytics-section">
+            <div class="section-title">Analytics</div>
+            <div id="analyticsContent">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading analytics...
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Export Section -->
+        <div class="content-section" id="export-section">
+            <div class="section-title">🚚 Data Export & Backup</div>
+            <div class="alert success" style="margin-bottom: 2rem;">
+                <strong>💡 Free Database Backup Solution</strong><br>
+                Render's free PostgreSQL plan expires after 1 month. Use these export options to backup your data before expiration.
+                The complete backup includes all tables in a convenient ZIP format.
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
+                
+                <!-- Complete Backup Card -->
+                <div class="stat-card" style="text-align: center;">
+                    <div class="stat-icon" style="background: var(--gradient-1); margin: 0 auto;">📦</div>
+                    <h3 style="margin: 1rem 0; color: var(--white);">Complete Backup</h3>
+                    <p style="color: var(--gray-300); margin-bottom: 1.5rem;">
+                        Download all data in one ZIP file containing multiple CSV files plus summary report and README.
+                    </p>
+                    <button class="btn primary" onclick="exportCompleteBackup()" style="width: 100%;">
+                        📦 Download Complete Backup
+                    </button>
+                </div>
+
+                <!-- Individual Exports -->
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-2);">👥</div>
+                    <h3 style="margin: 1rem 0; color: var(--white);">User Data</h3>
+                    <p style="color: var(--gray-300); margin-bottom: 1.5rem;">
+                        Export all user accounts, profiles, and registration information.
+                    </p>
+                    <button class="btn" onclick="exportUsers()" style="width: 100%;">
+                        📋 Export Users CSV
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-3);">🔍</div>
+                    <h3 style="margin: 1rem 0; color: var(--white);">Search History</h3>
+                    <p style="color: var(--gray-300); margin-bottom: 1.5rem;">
+                        Export all user searches, moods, locations, and query data.
+                    </p>
+                    <button class="btn" onclick="exportSearches()" style="width: 100%;">
+                        📋 Export Searches CSV
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-4);">💬</div>
+                    <h3 style="margin: 1rem 0; color: var(--white);">Feedback Data</h3>
+                    <p style="color: var(--gray-300); margin-bottom: 1.5rem;">
+                        Export all user feedback, ratings, reviews, and suggestions.
+                    </p>
+                    <button class="btn" onclick="exportFeedback()" style="width: 100%;">
+                        📋 Export Feedback CSV
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-1);">⚡</div>
+                    <h3 style="margin: 1rem 0; color: var(--white);">Admin Activities</h3>
+                    <p style="color: var(--gray-300); margin-bottom: 1.5rem;">
+                        Export all admin actions, user modifications, and system changes.
+                    </p>
+                    <button class="btn" onclick="exportAdminActivities()" style="width: 100%;">
+                        📋 Export Activities CSV
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-2);">📧</div>
+                    <h3 style="margin: 1rem 0; color: var(--white);">Newsletter Data</h3>
+                    <p style="color: var(--gray-300); margin-bottom: 1.5rem;">
+                        Export newsletter subscriptions and subscriber information.
+                    </p>
+                    <button class="btn" onclick="exportNewsletter()" style="width: 100%;">
+                        📋 Export Newsletter CSV
+                    </button>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-3);">🗄️</div>
+                    <h3 style="margin: 1rem 0; color: var(--white);">Database Schema</h3>
+                    <p style="color: var(--gray-300); margin-bottom: 1.5rem;">
+                        Export database structure and table definitions for reconstruction.
+                    </p>
+                    <button class="btn" onclick="exportSchema()" style="width: 100%;">
+                        📋 Export Schema
+                    </button>
+                </div>
+
+            </div>
+
+            <!-- Export Instructions -->
+            <div style="margin-top: 3rem; padding: 2rem; background: rgba(255, 255, 255, 0.05); border-radius: 16px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                <h3 style="color: var(--white); margin-bottom: 1rem;">📋 Export Instructions</h3>
+                <div style="color: var(--gray-300); line-height: 1.6;">
+                    <p><strong>🎯 Recommended Approach:</strong></p>
+                    <ol>
+                        <li><strong>Complete Backup:</strong> Use the "Complete Backup" option for a full data export</li>
+                        <li><strong>Verify Download:</strong> Check that the ZIP file contains all expected CSV files</li>
+                        <li><strong>Store Safely:</strong> Save the backup to multiple locations (cloud storage, local drive)</li>
+                        <li><strong>Test Import:</strong> If migrating, test the CSV files with your new database</li>
+                    </ol>
+                    
+                    <p style="margin-top: 1rem;"><strong>📄 CSV Format:</strong></p>
+                    <ul>
+                        <li>All files use UTF-8 encoding</li>
+                        <li>Comma-separated values with headers</li>
+                        <li>Dates in YYYY-MM-DD HH:MM:SS format</li>
+                        <li>Boolean values as "Yes/No"</li>
+                        <li>Empty fields are blank, not NULL</li>
+                    </ul>
+
+                    <p style="margin-top: 1rem;"><strong>🔐 Security Notes:</strong></p>
+                    <ul>
+                        <li>User passwords are NOT included (they're hashed anyway)</li>
+                        <li>Admin accounts are excluded from user exports</li>
+                        <li>IP addresses and user agents are included for analytics</li>
+                        <li>All exports are logged in admin activities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    
+    <!-- User Detail Modal -->
+    <div class="modal" id="userModal">
+        <div class="modal-content">
+            <div class="modal-title">User Details</div>
+            <div id="userModalContent"></div>
+        </div>
+    </div>
+
+    <!-- Feedback Detail Modal -->
+    <div class="modal" id="feedbackModal">
+        <div class="modal-content">
+            <div class="modal-title">Feedback Details</div>
+            <div id="feedbackModalContent"></div>
+        </div>
+    </div>
+    
+    
+
+    <script>
+        let currentUsersPage = 1;
+        let currentFeedbackPage = 1;
+        let currentActivitiesPage = 1;
+
+        // Initialize dashboard
+        document.addEventListener('DOMContentLoaded', function () {
+            loadStats();
+            loadUsers();
+
+            // Auto-refresh stats every 30 seconds
+            setInterval(loadStats, 30000);
+
+            // Search functionality
+            document.getElementById('userSearch').addEventListener('input', debounce(searchUsers, 500));
+            document.getElementById('feedbackStatusFilter').addEventListener('change', refreshFeedback);
+            document.getElementById('feedbackTypeFilter').addEventListener('change', refreshFeedback);
+        });
+
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/admin/stats');
+                const data = await response.json();
+
+                if (data.success) {
+                    renderStats(data.stats);
+                }
+            } catch (error) {
+                console.error('Error loading stats:', error);
+            }
+        }
+
+        function renderStats(stats) {
+            const statsGrid = document.getElementById('statsGrid');
+            statsGrid.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-1);">👥</div>
+                    <div class="stat-number">${stats.users.total}</div>
+                    <div class="stat-label">Total Users</div>
+                    <div class="stat-change positive">+${stats.users.new_30d} this month</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-2);">🔍</div>
+                    <div class="stat-number">${stats.activity.total_searches}</div>
+                    <div class="stat-label">Total Searches</div>
+                    <div class="stat-change positive">+${stats.activity.searches_30d} this month</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-3);">💬</div>
+                    <div class="stat-number">${stats.activity.total_feedback}</div>
+                    <div class="stat-label">Total Feedback</div>
+                    <div class="stat-change positive">+${stats.activity.feedback_30d} this month</div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: var(--gradient-4);">⭐</div>
+                    <div class="stat-number">${stats.ratings.average}</div>
+                    <div class="stat-label">Avg Rating</div>
+                    <div class="stat-change positive">Active users: ${stats.users.active_30d}</div>
+                </div>
+            `;
+        }
+
+        async function loadUsers(page = 1, search = '') {
+            try {
+                const params = new URLSearchParams({ page, per_page: 20 });
+                if (search) params.append('search', search);
+
+                const response = await fetch(`/api/admin/users?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderUsers(data.users, data.pagination);
+                    currentUsersPage = page;
+                }
+            } catch (error) {
+                console.error('Error loading users:', error);
+                document.getElementById('usersContent').innerHTML = '<div class="alert error">Failed to load users</div>';
+            }
+        }
+
+        function renderUsers(users, pagination) {
+            const content = document.getElementById('usersContent');
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Username</th>
+                            <th>Email</th>
+                            <th>Status</th>
+                            <th>Searches</th>
+                            <th>Feedback</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            users.forEach(user => {
+                html += `
+                    <tr>
+                        <td><strong>${user.username}</strong></td>
+                        <td>${user.email}</td>
+                        <td><span class="badge ${user.is_active ? 'active' : 'inactive'}">${user.is_active ? 'Active' : 'Inactive'}</span></td>
+                        <td>${user.stats.searches}</td>
+                        <td>${user.stats.feedback}</td>
+                        <td>${user.last_login ? new Date(user.last_login).toLocaleDateString() : 'Never'}</td>
+                        <td>
+                            <button class="btn" onclick="viewUser(${user.id})">👁️ View</button>
+                            <button class="btn ${user.is_active ? 'danger' : 'primary'}" onclick="toggleUser(${user.id})">${user.is_active ? '🚫' : '✅'}</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+
+            // Add pagination
+            if (pagination.pages > 1) {
+                html += '<div class="pagination">';
+
+                if (pagination.page > 1) {
+                    html += `<button onclick="loadUsers(${pagination.page - 1})">Previous</button>`;
+                }
+
+                for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.pages, pagination.page + 2); i++) {
+                    html += `<button class="${i === pagination.page ? 'active' : ''}" onclick="loadUsers(${i})">${i}</button>`;
+                }
+
+                if (pagination.page < pagination.pages) {
+                    html += `<button onclick="loadUsers(${pagination.page + 1})">Next</button>`;
+                }
+
+                html += '</div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        async function loadFeedback(page = 1) {
+            try {
+                const status = document.getElementById('feedbackStatusFilter').value;
+                const type = document.getElementById('feedbackTypeFilter').value;
+
+                const params = new URLSearchParams({ page, per_page: 20 });
+                if (status !== 'all') params.append('status', status);
+                if (type !== 'all') params.append('type', type);
+
+                const response = await fetch(`/api/admin/feedback?${params}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderFeedback(data.feedback, data.pagination);
+                    currentFeedbackPage = page;
+                }
+            } catch (error) {
+                console.error('Error loading feedback:', error);
+                document.getElementById('feedbackContent').innerHTML = '<div class="alert error">Failed to load feedback</div>';
+            }
+        }
+
+        function renderFeedback(feedback, pagination) {
+            const content = document.getElementById('feedbackContent');
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Type</th>
+                            <th>Rating</th>
+                            <th>Title</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            feedback.forEach(fb => {
+                html += `
+                    <tr>
+                        <td>${fb.user.username}</td>
+                        <td><span class="badge">${fb.type}</span></td>
+                        <td>${'⭐'.repeat(fb.rating)}</td>
+                        <td>${fb.title.substring(0, 50)}${fb.title.length > 50 ? '...' : ''}</td>
+                        <td><span class="badge ${fb.status}">${fb.status}</span></td>
+                        <td>${new Date(fb.timestamp).toLocaleDateString()}</td>
+                        <td>
+                            <button class="btn" onclick="viewFeedback(${fb.id})">👁️ View</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+
+            // Add pagination
+            if (pagination.pages > 1) {
+                html += '<div class="pagination">';
+
+                if (pagination.page > 1) {
+                    html += `<button onclick="loadFeedback(${pagination.page - 1})">Previous</button>`;
+                }
+
+                for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.pages, pagination.page + 2); i++) {
+                    html += `<button class="${i === pagination.page ? 'active' : ''}" onclick="loadFeedback(${i})">${i}</button>`;
+                }
+
+                if (pagination.page < pagination.pages) {
+                    html += `<button onclick="loadFeedback(${pagination.page + 1})">Next</button>`;
+                }
+
+                html += '</div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        async function loadActivities(page = 1) {
+            try {
+                const response = await fetch(`/api/admin/activities?page=${page}&per_page=50`);
+                const data = await response.json();
+
+                if (data.success) {
+                    renderActivities(data.activities, data.pagination);
+                    currentActivitiesPage = page;
+                }
+            } catch (error) {
+                console.error('Error loading activities:', error);
+                document.getElementById('activitiesContent').innerHTML = '<div class="alert error">Failed to load activities</div>';
+            }
+        }
+
+        function renderActivities(activities, pagination) {
+            const content = document.getElementById('activitiesContent');
+
+            let html = `
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Admin</th>
+                            <th>Action</th>
+                            <th>Target</th>
+                            <th>Details</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            activities.forEach(activity => {
+                html += `
+                    <tr>
+                        <td>${activity.admin.username}</td>
+                        <td><span class="badge">${activity.action.replace('_', ' ')}</span></td>
+                        <td>${activity.target_type} #${activity.target_id || 'N/A'}</td>
+                        <td>${activity.details || 'N/A'}</td>
+                        <td>${new Date(activity.timestamp).toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+
+            html += '</tbody></table>';
+
+            // Add pagination
+            if (pagination.pages > 1) {
+                html += '<div class="pagination">';
+
+                if (pagination.page > 1) {
+                    html += `<button onclick="loadActivities(${pagination.page - 1})">Previous</button>`;
+                }
+
+                for (let i = Math.max(1, pagination.page - 2); i <= Math.min(pagination.pages, pagination.page + 2); i++) {
+                    html += `<button class="${i === pagination.page ? 'active' : ''}" onclick="loadActivities(${i})">${i}</button>`;
+                }
+
+                if (pagination.page < pagination.pages) {
+                    html += `<button onclick="loadActivities(${pagination.page + 1})">Next</button>`;
+                }
+
+                html += '</div>';
+            }
+
+            content.innerHTML = html;
+        }
+
+        function showTab(tabName) {
+            // Update tab buttons
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Update content sections
+            document.querySelectorAll('.content-section').forEach(section => section.classList.remove('active'));
+            document.getElementById(`${tabName}-section`).classList.add('active');
+
+            // Load content based on tab
+            switch (tabName) {
+                case 'users':
+                    if (document.getElementById('usersContent').innerHTML.includes('Loading')) {
+                        loadUsers();
+                    }
+                    break;
+                case 'feedback':
+                    loadFeedback();
+                    break;
+                case 'activities':
+                    loadActivities();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+            }
+        }
+
+        async function viewUser(userId) {
+            try {
+                const response = await fetch(`/api/admin/user/${userId}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    showUserModal(data.user);
+                }
+            } catch (error) {
+                console.error('Error loading user details:', error);
+            }
+        }
+
+        function showUserModal(user) {
+            const modal = document.getElementById('userModal');
+            const content = document.getElementById('userModalContent');
+
+            content.innerHTML = `
+                <div class="form-group">
+                    <label>Username:</label>
+                    <div>${user.username}</div>
+                </div>
+                <div class="form-group">
+                    <label>Email:</label>
+                    <div>${user.email}</div>
+                </div>
+                <div class="form-group">
+                    <label>Age:</label>
+                    <div>${user.age || 'Not specified'}</div>
+                </div>
+                <div class="form-group">
+                    <label>Gender:</label>
+                    <div>${user.gender || 'Not specified'}</div>
+                </div>
+                <div class="form-group">
+                    <label>Status:</label>
+                    <div><span class="badge ${user.is_active ? 'active' : 'inactive'}">${user.is_active ? 'Active' : 'Inactive'}</span></div>
+                </div>
+                <div class="form-group">
+                    <label>Member Since:</label>
+                    <div>${new Date(user.created_at).toLocaleDateString()}</div>
+                </div>
+                <div class="form-group">
+                    <label>Recent Searches:</label>
+                    <div style="max-height: 200px; overflow-y: auto;">
+                        ${user.searches.slice(0, 10).map(search => `
+                            <div style="padding: 0.5rem; margin-bottom: 0.5rem; background: rgba(255,255,255,0.05); border-radius: 8px;">
+                                <strong>${search.mood || 'No mood'} - ${search.place_type}</strong><br>
+                                <small>${search.location || 'No location'} • ${new Date(search.search_date).toLocaleDateString()}</small>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button class="btn" onclick="closeModal('userModal')">Close</button>
+                    <button class="btn ${user.is_active ? 'danger' : 'primary'}" onclick="toggleUserFromModal(${user.id})">${user.is_active ? 'Deactivate' : 'Activate'}</button>
+                    <button class="btn primary" onclick="makeAdmin(${user.id})">Make Admin</button>
+                </div>
+            `;
+
+            modal.style.display = 'flex';
+        }
+
+        async function viewFeedback(feedbackId) {
+            // Implementation similar to viewUser but for feedback
+            // This would show feedback details and allow status updates
+            alert('Feedback detail modal - to be implemented');
+        }
+
+        async function toggleUser(userId) {
+            try {
+                const response = await fetch(`/api/admin/user/${userId}/toggle`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+
+                const data = await response.json();
+                if (data.success) {
+                    showAlert(data.message, 'success');
+                    loadUsers(currentUsersPage);
+                }
+            } catch (error) {
+                console.error('Error toggling user:', error);
+                showAlert('Failed to update user status', 'error');
+            }
+        }
+
+        async function makeAdmin(userId) {
+            if (confirm('Are you sure you want to make this user an admin?')) {
+                try {
+                    const response = await fetch('/api/admin/make-admin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        showAlert(data.message, 'success');
+                        closeModal('userModal');
+                        loadUsers(currentUsersPage);
+                    }
+                } catch (error) {
+                    console.error('Error making admin:', error);
+                    showAlert('Failed to promote user', 'error');
+                }
+            }
+        }
+
+        function searchUsers() {
+            const search = document.getElementById('userSearch').value;
+            loadUsers(1, search);
+        }
+
+        function refreshUsers() {
+            document.getElementById('userSearch').value = '';
+            loadUsers(1);
+        }
+
+        function refreshFeedback() {
+            loadFeedback(1);
+        }
+
+        function loadAnalytics() {
+            document.getElementById('analyticsContent').innerHTML = `
+                <div class="alert success">
+                    Analytics feature coming soon! 📊<br>
+                    This will include detailed charts and insights about user behavior, popular moods, search patterns, and more.
+                </div>
+            `;
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        function showAlert(message, type) {
+            const alert = document.createElement('div');
+            alert.className = `alert ${type}`;
+            alert.textContent = message;
+            alert.style.position = 'fixed';
+            alert.style.top = '20px';
+            alert.style.right = '20px';
+            alert.style.zIndex = '9999';
+
+            document.body.appendChild(alert);
+
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    const response = await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' }
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        window.location.href = result.redirect || '/login';
+                    }
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    window.location.href = '/login';
+                }
+            }
+        }
+
+        // Close modals when clicking outside
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function (e) {
+                if (e.target === this) {
+                    this.style.display = 'none';
+                }
+            });
+        });
+        // Add these JavaScript functions to your admin_dashboard.html file
+// Place them in the existing <script> section
+
+// Individual export functions
+async function exportUsers() {
+    try {
+        showExportLoading('users');
+        const response = await fetch('/api/admin/export/users');
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, 'foodmood_users.csv');
+            showExportSuccess('Users exported successfully!');
+        } else {
+            throw new Error('Export failed');
+        }
+    } catch (error) {
+        console.error('Error exporting users:', error);
+        showExportError('Failed to export users');
+    } finally {
+        hideExportLoading();
+    }
+}
+
+async function exportSearches() {
+    try {
+        showExportLoading('searches');
+        const response = await fetch('/api/admin/export/searches');
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, 'foodmood_searches.csv');
+            showExportSuccess('Search history exported successfully!');
+        } else {
+            throw new Error('Export failed');
+        }
+    } catch (error) {
+        console.error('Error exporting searches:', error);
+        showExportError('Failed to export search history');
+    } finally {
+        hideExportLoading();
+    }
+}
+
+async function exportFeedback() {
+    try {
+        showExportLoading('feedback');
+        const response = await fetch('/api/admin/export/feedback');
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, 'foodmood_feedback.csv');
+            showExportSuccess('Feedback exported successfully!');
+        } else {
+            throw new Error('Export failed');
+        }
+    } catch (error) {
+        console.error('Error exporting feedback:', error);
+        showExportError('Failed to export feedback');
+    } finally {
+        hideExportLoading();
+    }
+}
+
+async function exportAdminActivities() {
+    try {
+        showExportLoading('admin_activities');
+        const response = await fetch('/api/admin/export/admin-activities');
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, 'foodmood_admin_activities.csv');
+            showExportSuccess('Admin activities exported successfully!');
+        } else {
+            throw new Error('Export failed');
+        }
+    } catch (error) {
+        console.error('Error exporting admin activities:', error);
+        showExportError('Failed to export admin activities');
+    } finally {
+        hideExportLoading();
+    }
+}
+
+async function exportNewsletter() {
+    try {
+        showExportLoading('newsletter');
+        const response = await fetch('/api/admin/export/newsletter');
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, 'foodmood_newsletter.csv');
+            showExportSuccess('Newsletter data exported successfully!');
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Export failed');
+        }
+    } catch (error) {
+        console.error('Error exporting newsletter:', error);
+        showExportError(error.message || 'Failed to export newsletter data');
+    } finally {
+        hideExportLoading();
+    }
+}
+
+async function exportSchema() {
+    try {
+        showExportLoading('schema');
+        const response = await fetch('/api/admin/export/database-schema');
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, 'foodmood_database_schema.md');
+            showExportSuccess('Database schema exported successfully!');
+        } else {
+            throw new Error('Export failed');
+        }
+    } catch (error) {
+        console.error('Error exporting schema:', error);
+        showExportError('Failed to export database schema');
+    } finally {
+        hideExportLoading();
+    }
+}
+
+// Complete backup function
+async function exportCompleteBackup() {
+    try {
+        showExportLoading('complete_backup');
+        showAlert('🔄 Preparing complete backup... This may take a few moments.', 'info');
+        
+        const response = await fetch('/api/admin/export/complete-backup');
+        
+        if (response.ok) {
+            const blob = await response.blob();
+            downloadFile(blob, 'foodmood_complete_backup.zip');
+            showExportSuccess('🎉 Complete backup downloaded successfully! Check your downloads folder.');
+        } else {
+            const errorData = await response.json();
+            throw new Error(errorData.message || 'Export failed');
+        }
+    } catch (error) {
+        console.error('Error creating complete backup:', error);
+        showExportError('Failed to create complete backup: ' + error.message);
+    } finally {
+        hideExportLoading();
+    }
+}
+
+// Helper functions for file download and UI feedback
+function downloadFile(blob, filename) {
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.style.display = 'none';
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+}
+
+function showExportLoading(type) {
+    const loadingElement = document.createElement('div');
+    loadingElement.id = 'export-loading';
+    loadingElement.className = 'alert info';
+    loadingElement.style.position = 'fixed';
+    loadingElement.style.top = '20px';
+    loadingElement.style.right = '20px';
+    loadingElement.style.zIndex = '9999';
+    loadingElement.style.width = '300px';
+    loadingElement.innerHTML = `
+        <div style="display: flex; align-items: center; gap: 10px;">
+            <div class="spinner" style="width: 20px; height: 20px; margin: 0;"></div>
+            <span>Exporting ${type.replace('_', ' ')}...</span>
+        </div>
+    `;
+    document.body.appendChild(loadingElement);
+}
+
+function hideExportLoading() {
+    const loadingElement = document.getElementById('export-loading');
+    if (loadingElement) {
+        loadingElement.remove();
+    }
+}
+
+function showExportSuccess(message) {
+    showAlert(`✅ ${message}`, 'success');
+}
+
+function showExportError(message) {
+    showAlert(`❌ ${message}`, 'error');
+}
+
+// Enhanced showAlert function (if not already enhanced)
+function showAlert(message, type, duration = 5000) {
+    // Remove existing alerts of the same type
+    const existingAlerts = document.querySelectorAll(`.alert.${type}`);
+    existingAlerts.forEach(alert => {
+        if (alert.style.position === 'fixed') {
+            alert.remove();
+        }
+    });
+
+    const alert = document.createElement('div');
+    alert.className = `alert ${type}`;
+    alert.innerHTML = message;
+    alert.style.position = 'fixed';
+    alert.style.top = '20px';
+    alert.style.right = '20px';
+    alert.style.zIndex = '9999';
+    alert.style.width = '350px';
+    alert.style.boxShadow = 'var(--shadow-lg)';
+    alert.style.animation = 'slideInRight 0.3s ease';
+
+    // Add close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.float = 'right';
+    closeBtn.style.background = 'none';
+    closeBtn.style.border = 'none';
+    closeBtn.style.color = 'inherit';
+    closeBtn.style.fontSize = '20px';
+    closeBtn.style.cursor = 'pointer';
+    closeBtn.style.marginLeft = '10px';
+    closeBtn.onclick = () => alert.remove();
+    
+    alert.appendChild(closeBtn);
+    document.body.appendChild(alert);
+
+    setTimeout(() => {
+        if (alert.parentNode) {
+            alert.style.animation = 'slideOutRight 0.3s ease';
+            setTimeout(() => alert.remove(), 300);
+        }
+    }, duration);
+}
+
+// Add CSS animations
+const exportAnimations = `
+    @keyframes slideInRight {
+        from {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        to {
+            transform: translateX(0);
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideOutRight {
+        from {
+            transform: translateX(0);
+            opacity: 1;
+        }
+        to {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+    }
+
+    .alert.info {
+        background: rgba(59, 130, 246, 0.15);
+        border: 1px solid rgba(59, 130, 246, 0.3);
+        color: var(--info);
+    }
+`;
+
+// Add the animations to the page
+const styleSheet = document.createElement('style');
+styleSheet.textContent = exportAnimations;
+document.head.appendChild(styleSheet);
+    </script>
+</body>
+
+</html>
