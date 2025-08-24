@@ -401,6 +401,10 @@ def require_admin(f):
     return decorated_function
 
 # Routes
+@app.route('/healthz')
+def healthz():
+    return "OK", 200
+
 @app.route('/')
 def index():
     """Main page - redirect to login if not authenticated"""
