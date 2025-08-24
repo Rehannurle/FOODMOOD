@@ -1,0 +1,1481 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Help Center - Food Mood</title>
+    <!-- Favicon setup -->
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='favicon_io/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='favicon_io/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='favicon_io/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon_io/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon_io/favicon.ico') }}">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #525390;
+            --primary-dark: #4f46e5;
+            --primary-light: #8b5cf6;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+
+            --black: #0f0f23;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-glow: 0 0 40px rgb(102 126 234 / 0.15);
+
+            --blur: 20px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: var(--white);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            33% {
+                transform: translateY(-30px) rotate(2deg);
+            }
+
+            66% {
+                transform: translateY(-20px) rotate(-2deg);
+            }
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 3rem;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-hero);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.625rem 1.25rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.875rem;
+        }
+
+        .nav-btn:hover {
+            background: var(--gradient-3);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 2rem 0;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 500px;
+            height: 500px;
+            background: var(--gradient-hero);
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.1;
+            z-index: -1;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 1.2;
+            margin-bottom: 1rem;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            color: var(--gray-300);
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .search-section {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 4rem;
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .search-container {
+            display: flex;
+            gap: 1rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1.25rem 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), var(--shadow-md);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .search-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .search-btn {
+            padding: 1.25rem 2rem;
+            background: var(--gradient-4);
+            color: var(--white);
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            box-shadow: var(--shadow-md);
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg), 0 0 25px rgba(67, 233, 123, 0.3);
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-bottom: 4rem;
+        }
+
+        .quick-action-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .quick-action-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.6s;
+        }
+
+        .quick-action-card:hover::before {
+            left: 100%;
+        }
+
+        .quick-action-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .quick-action-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-1);
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            margin: 0 auto 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .quick-action-card:nth-child(2) .quick-action-icon {
+            background: var(--gradient-2);
+        }
+
+        .quick-action-card:nth-child(3) .quick-action-icon {
+            background: var(--gradient-3);
+        }
+
+        .quick-action-card:nth-child(4) .quick-action-icon {
+            background: var(--gradient-4);
+        }
+
+        .quick-action-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.75rem;
+        }
+
+        .quick-action-desc {
+            color: var(--gray-300);
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .help-categories {
+            margin-bottom: 4rem;
+        }
+
+        .categories-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .categories-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 1rem;
+        }
+
+        .categories-subtitle {
+            color: var(--gray-300);
+            font-size: 1.1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .category-card {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .category-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .category-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .category-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-1);
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-md);
+        }
+
+        .category-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: var(--white);
+        }
+
+        .faq-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .faq-item {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            padding: 1.25rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .faq-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+            transform: translateX(4px);
+        }
+
+        .faq-question {
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+        }
+
+        .faq-answer {
+            color: var(--gray-300);
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .contact-support {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .contact-support::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .contact-support h3 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            background: var(--gradient-3);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .contact-support p {
+            color: var(--gray-300);
+            font-size: 1.1rem;
+            margin-bottom: 2rem;
+            max-width: 500px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .contact-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .contact-btn {
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .contact-btn:hover {
+            background: var(--gradient-3);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .contact-btn.primary {
+            background: var(--gradient-4);
+            border-color: transparent;
+        }
+
+        .contact-btn.primary:hover {
+            box-shadow: var(--shadow-lg), 0 0 25px rgba(67, 233, 123, 0.3);
+        }
+
+        /* Search Results */
+        .search-results {
+            display: none;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-results.active {
+            display: block;
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .search-results h4 {
+            color: var(--white);
+            margin-bottom: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .search-result-item {
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            margin-bottom: 0.75rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .search-result-item:hover {
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .search-result-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-container {
+                flex-direction: column;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .categories-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .contact-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .contact-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .search-section,
+            .category-card,
+            .contact-support {
+                padding: 2rem;
+            }
+
+            .quick-action-card {
+                padding: 1.5rem;
+            }
+        }
+
+        .footer {
+            margin-top: 6rem;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(var(--blur));
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            padding: 4rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-hero);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .footer-logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-description {
+            color: var(--gray-300);
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 320px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .social-link:hover {
+            background: var(--gradient-3);
+            border-color: transparent;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .footer-column-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .footer-column-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--gradient-1);
+            border-radius: 1px;
+        }
+
+        .footer-link-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-link {
+            color: var(--gray-300);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            padding: 0.25rem 0;
+            position: relative;
+        }
+
+        .footer-link:hover {
+            color: var(--white);
+            transform: translateX(4px);
+        }
+
+        .newsletter-text {
+            color: var(--gray-300);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .newsletter-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.875rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .newsletter-btn {
+            padding: 0.875rem 1.5rem;
+            background: var(--gradient-2);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-bottom-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .copyright {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-bottom-link {
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        .footer-bottom-link:hover {
+            color: var(--white);
+        }
+
+        /* Add these to your existing media queries */
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                padding: 3rem 1.5rem 2rem;
+            }
+
+            .footer-links {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+
+            .footer-bottom-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .footer-bottom-links {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-links {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-social {
+                justify-content: center;
+            }
+
+            .footer-bottom-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <div class="nav-brand">
+                <div class="nav-logo">🍽️</div>
+                <div class="nav-title">Food Mood</div>
+            </div>
+            <div class="nav-actions">
+                <a href="/" class="nav-btn">🏠 Home</a>
+                <a href="/contact" class="nav-btn">💬 Contact</a>
+            </div>
+        </div>
+
+        <div class="header">
+            <h1>Help Center</h1>
+            <p>Find answers to your questions and get the support you need</p>
+        </div>
+
+        <div class="search-section">
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Search for help articles, tutorials, or FAQs..."
+                    id="searchInput">
+                <button class="search-btn" onclick="performSearch()">🔍 Search</button>
+            </div>
+        </div>
+
+        <div class="search-results" id="searchResults">
+            <h4>Search Results</h4>
+            <div id="searchResultsList"></div>
+        </div>
+
+        <div class="quick-actions">
+            <div class="quick-action-card" onclick="scrollToSection('getting-started')">
+                <div class="quick-action-icon">🚀</div>
+                <div class="quick-action-title">Getting Started</div>
+                <div class="quick-action-desc">Learn the basics of using Food Mood to discover amazing places</div>
+            </div>
+
+            <div class="quick-action-card" onclick="scrollToSection('mood-guide')">
+                <div class="quick-action-icon">😊</div>
+                <div class="quick-action-title">Mood Guide</div>
+                <div class="quick-action-desc">Understanding how our AI matches places to your current mood</div>
+            </div>
+
+            <div class="quick-action-card" onclick="scrollToSection('troubleshooting')">
+                <div class="quick-action-icon">🔧</div>
+                <div class="quick-action-title">Troubleshooting</div>
+                <div class="quick-action-desc">Solutions for common issues and technical problems</div>
+            </div>
+
+            <div class="quick-action-card" onclick="scrollToSection('account')">
+                <div class="quick-action-icon">👤</div>
+                <div class="quick-action-title">Account & Privacy</div>
+                <div class="quick-action-desc">Manage your account settings and privacy preferences</div>
+            </div>
+        </div>
+
+        <div class="help-categories">
+            <div class="categories-header">
+                <h2 class="categories-title">Browse by Category</h2>
+                <p class="categories-subtitle">Find detailed answers organized by topic</p>
+            </div>
+
+            <div class="categories-grid">
+                <div class="category-card" id="getting-started">
+                    <div class="category-header">
+                        <div class="category-icon">🚀</div>
+                        <h3 class="category-title">Getting Started</h3>
+                    </div>
+                    <ul class="faq-list">
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">How does Food Mood work?</div>
+                            <div class="faq-answer" style="display: none;">Food Mood uses AI to analyze your current
+                                mood and preferences, then recommends restaurants, cafés, hotels, or dhabas that
+                                perfectly match your vibe. Simply select your mood and location to get personalized
+                                suggestions.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">How do I create an account?</div>
+                            <div class="faq-answer" style="display: none;">Click on "Sign Up" in the navigation bar,
+                                fill in your details, and verify your email address. You can also sign up using your
+                                Google or Facebook account for faster registration.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">Is Food Mood free to use?</div>
+                            <div class="faq-answer" style="display: none;">Yes! Food Mood's basic features are
+                                completely free. We also offer premium features for enhanced personalization and
+                                exclusive recommendations.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">Which cities are supported?</div>
+                            <div class="faq-answer" style="display: none;">Food Mood currently supports major cities
+                                across India including Mumbai, Delhi, Bangalore, Pune, Chennai, Kolkata, and many more.
+                                We're constantly expanding to new locations.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category-card" id="mood-guide">
+                    <div class="category-header">
+                        <div class="category-icon" style="background: var(--gradient-2);">😊</div>
+                        <h3 class="category-title">Understanding Moods</h3>
+                    </div>
+                    <ul class="faq-list">
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">What does each mood mean?</div>
+                            <div class="faq-answer" style="display: none;">Each mood represents different preferences:
+                                'Euphoric' suggests celebratory places, 'Melancholic' finds comfort food spots,
+                                'Romantic' recommends intimate settings, and 'Social' finds group-friendly venues.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">How accurate are mood-based recommendations?</div>
+                            <div class="faq-answer" style="display: none;">Our AI considers factors like ambiance,
+                                cuisine type, pricing, and user reviews to match places with your mood. Accuracy
+                                improves as you use the app and provide feedback on recommendations.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">Can I select multiple moods?</div>
+                            <div class="faq-answer" style="display: none;">Currently, you can select one primary mood
+                                per search. This helps our AI provide more focused and accurate recommendations tailored
+                                to your current state of mind.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">What if I don't see my mood listed?</div>
+                            <div class="faq-answer" style="display: none;">Use the custom query field to describe your
+                                specific preferences, or choose the closest mood from our list. We're always adding new
+                                mood categories based on user feedback.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category-card" id="troubleshooting">
+                    <div class="category-header">
+                        <div class="category-icon" style="background: var(--gradient-3);">🔧</div>
+                        <h3 class="category-title">Troubleshooting</h3>
+                    </div>
+                    <ul class="faq-list">
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">Location detection isn't working</div>
+                            <div class="faq-answer" style="display: none;">Ensure location permissions are enabled for
+                                your browser. You can also manually enter your location in the search field. Check your
+                                browser settings and allow location access for Food Mood.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">No results showing for my area</div>
+                            <div class="faq-answer" style="display: none;">Try expanding your search radius or check if
+                                your location is spelled correctly. We're constantly adding new places to our database.
+                                You can also suggest venues through our feedback form.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">App is loading slowly</div>
+                            <div class="faq-answer" style="display: none;">Clear your browser cache and cookies, check
+                                your internet connection, and try refreshing the page. For persistent issues, try using
+                                a different browser or device.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">Search results seem incorrect</div>
+                            <div class="faq-answer" style="display: none;">Our AI learns from user feedback. Please rate
+                                your experiences and report incorrect recommendations. This helps improve future
+                                suggestions for you and other users.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category-card" id="account">
+                    <div class="category-header">
+                        <div class="category-icon" style="background: var(--gradient-4);">👤</div>
+                        <h3 class="category-title">Account & Privacy</h3>
+                    </div>
+                    <ul class="faq-list">
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">How do I change my password?</div>
+                            <div class="faq-answer" style="display: none;">Go to your Profile page, click on "Account
+                                Settings," then select "Change Password." You'll need to enter your current password and
+                                choose a new one.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">What data does Food Mood collect?</div>
+                            <div class="faq-answer" style="display: none;">We collect location data (when permitted),
+                                search preferences, and usage patterns to improve recommendations. All data is encrypted
+                                and used solely to enhance your experience. Read our Privacy Policy for details.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">Can I delete my account?</div>
+                            <div class="faq-answer" style="display: none;">
+                                At the moment, permanent account deletion is not available, as we are collecting data to
+                                improve our services and provide a better experience.
+                                Rest assured, your data is stored securely and handled with the highest level of care
+                                and privacy.
+                            </div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">How do I update my preferences?</div>
+                            <div class="faq-answer" style="display: none;">Visit your Profile page to update dietary
+                                restrictions, cuisine preferences, budget ranges, and notification settings. Changes
+                                take effect immediately for future searches.</div>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="category-card">
+                    <div class="category-header">
+                        <div class="category-icon" style="background: var(--gradient-1);">🍽️</div>
+                        <h3 class="category-title">Places & Reviews</h3>
+                    </div>
+                    <ul class="faq-list">
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">How can I add a new place?</div>
+                            <div class="faq-answer" style="display: none;">Use the "Suggest a Place" feature in the app
+                                or contact our support team with venue details. We verify all submissions before adding
+                                them to our database.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">Can I leave reviews and ratings?</div>
+                            <div class="faq-answer" style="display: none;">Yes! After visiting a recommended place,
+                                you'll receive a prompt to rate your experience. Your reviews help improve
+                                recommendations for the community.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">How are places verified?</div>
+                            <div class="faq-answer" style="display: none;">Our team verifies business information,
+                                operating hours, and contact details. We also use user feedback and official sources to
+                                keep information accurate and up-to-date.</div>
+                        </li>
+                        <li class="faq-item" onclick="toggleAnswer(this)">
+                            <div class="faq-question">Why don't I see photos for some places?</div>
+                            <div class="faq-answer" style="display: none;">We're constantly updating our photo database.
+                                Photos come from verified sources and user contributions. You can help by submitting
+                                photos of places you visit.</div>
+                        </li>
+                    </ul>
+                </div>
+
+
+            </div>
+        </div>
+
+        <div class="contact-support">
+            <h3>Still Need Help?</h3>
+            <p>Can't find what you're looking for? Our support team is here to help you get the most out of Food Mood.
+            </p>
+            <div class="contact-buttons">
+                <a href="/contact" class="contact-btn primary">
+                    💬 Contact Support
+                </a>
+                <a href="mailto:foodmood835@gmail.com" class="contact-btn">
+                    📧 Email Us
+                </a>
+
+            </div>
+        </div>
+    </div>
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <div class="footer-logo-icon">🍽️</div>
+                    <div class="footer-logo-text">Food Mood</div>
+                </div>
+                <p class="footer-description">AI-powered mood-based discovery for the perfect dining and hospitality
+                    experiences.</p>
+                <div class="footer-social">
+                    <a href="#" class="social-link" aria-label="Twitter">🐦</a>
+                    <a href="#" class="social-link" aria-label="Instagram">📷</a>
+                    <a href="#" class="social-link" aria-label="Facebook">📘</a>
+                    <a href="#" class="social-link" aria-label="LinkedIn">💼</a>
+                </div>
+            </div>
+
+            <div class="footer-links">
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Product</h4>
+                    <ul class="footer-link-list">
+                        <li><a href="/features" class="footer-link">Features</a></li>
+                        <li><a href="/howwork" class="footer-link">How It Works</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Support</h4>
+                    <ul class="footer-link-list">
+                        <li><a href="/contact.html" class="footer-link">Contact Us</a></li>
+                        <li><a href="/feedback" class="footer-link">Feedback</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-column">
+                    <h4 class="footer-column-title">Legal</h4>
+                    <ul class="footer-link-list">
+                        <li><a href="privacy.html" class="footer-link">Privacy Policy</a></li>
+                        <li><a href="terms.html" class="footer-link">Terms of Service</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div class="footer-bottom-content">
+                <p class="copyright">© 2025 Food Mood. All rights reserved. Made with ❤️ for food lovers.</p>
+            </div>
+        </div>
+    </footer>
+    <script>
+
+        // Sample help articles for search functionality
+        const helpArticles = [
+            {
+                title: "How to get started with Food Mood",
+                content: "Learn the basics of using Food Mood to discover amazing places based on your mood",
+                category: "Getting Started"
+            },
+            {
+                title: "Understanding mood-based recommendations",
+                content: "How our AI analyzes your mood to suggest perfect dining experiences",
+                category: "Mood Guide"
+            },
+            {
+                title: "Troubleshooting location issues",
+                content: "Solutions for location detection problems and manual location entry",
+                category: "Troubleshooting"
+            },
+            {
+                title: "Managing your account settings",
+                content: "Update preferences, change password, and manage privacy settings",
+                category: "Account"
+            },
+            {
+                title: "Adding new places to Food Mood",
+                content: "How to suggest new restaurants, cafes, and venues to our database",
+                category: "Places"
+            },
+            {
+                title: "Premium subscription benefits",
+                content: "Explore advanced features available with Food Mood Premium",
+                category: "Premium"
+            },
+            {
+                title: "Privacy and data protection",
+                content: "Understanding how we protect your personal information and data",
+                category: "Privacy"
+            },
+            {
+                title: "Rating and reviewing places",
+                content: "How to leave reviews and ratings for places you've visited",
+                category: "Reviews"
+            }
+        ];
+
+        function performSearch() {
+            const searchInput = document.getElementById('searchInput');
+            const searchResults = document.getElementById('searchResults');
+            const searchResultsList = document.getElementById('searchResultsList');
+            const query = searchInput.value.toLowerCase().trim();
+
+            if (query === '') {
+                searchResults.classList.remove('active');
+                return;
+            }
+
+            // Filter articles based on search query
+            const filteredArticles = helpArticles.filter(article =>
+                article.title.toLowerCase().includes(query) ||
+                article.content.toLowerCase().includes(query) ||
+                article.category.toLowerCase().includes(query)
+            );
+
+            // Clear previous results
+            searchResultsList.innerHTML = '';
+
+            if (filteredArticles.length > 0) {
+                filteredArticles.forEach(article => {
+                    const resultItem = document.createElement('div');
+                    resultItem.className = 'search-result-item';
+                    resultItem.innerHTML = `
+                        <strong>${article.title}</strong><br>
+                        <span style="color: var(--gray-400); font-size: 0.85rem;">${article.category}</span><br>
+                        <span style="color: var(--gray-300); font-size: 0.9rem;">${article.content}</span>
+                    `;
+                    resultItem.onclick = () => {
+                        // Simulate opening article (you would implement actual article pages)
+                        alert(`Opening: ${article.title}`);
+                    };
+                    searchResultsList.appendChild(resultItem);
+                });
+                searchResults.classList.add('active');
+            } else {
+                searchResultsList.innerHTML = '<div class="search-result-item">No results found for your search query.</div>';
+                searchResults.classList.add('active');
+            }
+        }
+
+        function scrollToSection(sectionId) {
+            const section = document.getElementById(sectionId);
+            if (section) {
+                section.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+
+                // Add a subtle highlight effect
+                section.style.transform = 'scale(1.02)';
+                section.style.boxShadow = 'var(--shadow-xl), 0 0 40px rgba(102, 126, 234, 0.3)';
+
+                setTimeout(() => {
+                    section.style.transform = '';
+                    section.style.boxShadow = '';
+                }, 2000);
+            }
+        }
+
+        function toggleAnswer(faqItem) {
+            const answer = faqItem.querySelector('.faq-answer');
+            const isVisible = answer.style.display === 'block';
+
+            // Close all other answers in the same category
+            const categoryCard = faqItem.closest('.category-card');
+            categoryCard.querySelectorAll('.faq-answer').forEach(ans => {
+                ans.style.display = 'none';
+            });
+            categoryCard.querySelectorAll('.faq-item').forEach(item => {
+                item.style.backgroundColor = 'rgba(255, 255, 255, 0.08)';
+            });
+
+            // Toggle current answer
+            if (!isVisible) {
+                answer.style.display = 'block';
+                faqItem.style.backgroundColor = 'rgba(255, 255, 255, 0.15)';
+
+                // Smooth scroll to the item
+                setTimeout(() => {
+                    faqItem.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'nearest'
+                    });
+                }, 100);
+            }
+        }
+
+        // Enable search on Enter key
+        document.getElementById('searchInput').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        // Real-time search as user types (debounced)
+        let searchTimeout;
+        document.getElementById('searchInput').addEventListener('input', function () {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => {
+                if (this.value.length > 2) {
+                    performSearch();
+                } else {
+                    document.getElementById('searchResults').classList.remove('active');
+                }
+            }, 300);
+        });
+
+        // Add smooth animations on scroll
+        window.addEventListener('scroll', () => {
+            const cards = document.querySelectorAll('.category-card, .quick-action-card');
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                const isVisible = rect.top < window.innerHeight && rect.bottom > 0;
+
+                if (isVisible) {
+                    card.style.transform = 'translateY(0)';
+                    card.style.opacity = '1';
+                }
+            });
+        });
+
+        // Initialize animations
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.category-card, .quick-action-card');
+            cards.forEach((card, index) => {
+                card.style.transform = 'translateY(30px)';
+                card.style.opacity = '0';
+                card.style.transition = `transform 0.6s ease ${index * 0.1}s, opacity 0.6s ease ${index * 0.1}s`;
+            });
+
+            // Trigger initial animation
+            setTimeout(() => {
+                window.dispatchEvent(new Event('scroll'));
+            }, 100);
+        });
+    </script>
+</body>
+
+</html>

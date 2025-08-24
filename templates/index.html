@@ -1,0 +1,1702 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Mood - AI-Powered Mood-Based Discovery</title>
+    <!-- Favicon setup -->
+    <link rel="apple-touch-icon" sizes="180x180"
+        href="{{ url_for('static', filename='favicon_io/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+        href="{{ url_for('static', filename='favicon_io/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+        href="{{ url_for('static', filename='favicon_io/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon_io/site.webmanifest') }}">
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon_io/favicon.ico') }}">
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #525390;
+            --primary-dark: #4f46e5;
+            --primary-light: #8b5cf6;
+            --secondary: #06b6d4;
+            --accent: #f59e0b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --error: #ef4444;
+
+            --black: #0f0f23;
+            --white: #ffffff;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --gray-900: #0f172a;
+
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-4: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+            --shadow-glow: 0 0 40px rgb(102 126 234 / 0.15);
+
+            --blur: 20px;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+            color: var(--white);
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated background particles */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image:
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 200, 255, 0.2) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            z-index: -1;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            33% {
+                transform: translateY(-30px) rotate(2deg);
+            }
+
+            66% {
+                transform: translateY(-20px) rotate(-2deg);
+            }
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            position: relative;
+        }
+
+        .nav-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding: 1rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .nav-brand {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .nav-logo {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-hero);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .nav-btn {
+            padding: 0.625rem 1.25rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: 0.875rem;
+        }
+
+        .nav-btn:hover {
+            background: var(--gradient-3);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .nav-btn.profile {
+            background: var(--gradient-1);
+            border-color: transparent;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            padding: 3rem 0;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 600px;
+            height: 600px;
+            background: var(--gradient-hero);
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.1;
+            z-index: -1;
+            animation: pulse 4s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+            }
+
+            50% {
+                transform: translate(-50%, -50%) scale(1.1);
+            }
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: clamp(80px, 12vw, 120px);
+            height: clamp(80px, 12vw, 120px);
+            background: var(--gradient-hero);
+            border-radius: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            box-shadow: var(--shadow-xl), 0 0 40px rgba(102, 126, 234, 0.4);
+            animation: logoFloat 3s ease-in-out infinite;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            animation: logoShine 4s linear infinite;
+        }
+
+        @keyframes logoFloat {
+
+            0%,
+            100% {
+                transform: translateY(0px) rotate(0deg);
+            }
+
+            50% {
+                transform: translateY(-8px) rotate(2deg);
+            }
+        }
+
+        @keyframes logoShine {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .header h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            font-weight: 800;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            line-height: 1.1;
+            position: relative;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: var(--gray-300);
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
+
+        .search-form {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: var(--shadow-lg), var(--shadow-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .search-form::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .form-section {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-section label {
+            display: block;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--white);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .form-section label::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--gradient-1);
+            border-radius: 2px;
+        }
+
+        .place-type-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .place-type-btn {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            color: var(--white);
+            padding: 1.5rem 2rem;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.95rem;
+            font-weight: 600;
+            text-align: center;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .place-type-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+            transition: left 0.5s;
+        }
+
+        .place-type-btn:hover::before {
+            left: 100%;
+        }
+
+        .place-type-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg);
+            border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .place-type-btn.active {
+            background: var(--gradient-1);
+            border-color: transparent;
+            box-shadow: var(--shadow-lg), 0 0 30px rgba(102, 126, 234, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .mood-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 1rem;
+        }
+
+        .mood-btn {
+            background: rgba(255, 255, 255, 0.06);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--gray-100);
+            padding: 1.25rem 1rem;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-align: center;
+            line-height: 1.3;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .mood-btn:hover {
+            transform: translateY(-3px);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: rgba(255, 255, 255, 0.2);
+            box-shadow: var(--shadow-md);
+        }
+
+        .mood-btn.active {
+            background: var(--gradient-2);
+            border-color: transparent;
+            color: var(--white);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg), 0 0 25px rgba(240, 147, 251, 0.4);
+        }
+
+        .location-container {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+
+        .location-input,
+        .custom-input {
+            width: 100%;
+            padding: 1.25rem 1.5rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .location-input:focus,
+        .custom-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1), var(--shadow-md);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .location-input::placeholder,
+        .custom-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .location-btn {
+            position: absolute;
+            right: 6px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: var(--gradient-3);
+            color: var(--white);
+            border: none;
+            padding: 0.75rem 1.25rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.875rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            box-shadow: var(--shadow);
+        }
+
+        .location-btn:hover {
+            transform: translateY(-50%) scale(1.05);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .location-status {
+            margin-top: 1rem;
+            padding: 0.875rem 1.25rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-align: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .location-status.success {
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+            color: var(--success);
+        }
+
+        .location-status.error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+        }
+
+        .location-status.loading {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: var(--secondary);
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 1.5rem 2rem;
+            background: var(--gradient-4);
+            color: var(--white);
+            border: none;
+            border-radius: 16px;
+            font-size: 1.125rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: inherit;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .search-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.6s;
+        }
+
+        .search-btn:hover::before {
+            left: 100%;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-xl), 0 0 40px rgba(67, 233, 123, 0.3);
+        }
+
+        .search-btn:active {
+            transform: translateY(-2px);
+        }
+
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 24px;
+            box-shadow: var(--shadow-lg);
+            margin: 3rem 0;
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 255, 255, 0.1);
+            border-top: 3px solid var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 2rem;
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: var(--white);
+            background: var(--gradient-1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .loading p {
+            color: var(--gray-300);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        .results {
+            display: none;
+            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .results-header {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 3rem 2rem;
+            border-radius: 20px;
+            box-shadow: var(--shadow-lg);
+            margin-bottom: 3rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .results-header h2 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--white);
+            background: var(--gradient-2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .results-header p {
+            font-size: 1rem;
+            color: var(--gray-300);
+            font-weight: 400;
+            opacity: 0.9;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+            gap: 2rem;
+        }
+
+        .place-card {
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: var(--shadow-md);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .place-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            transition: left 0.6s;
+        }
+
+        .place-card:hover::before {
+            left: 100%;
+        }
+
+        .place-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(255, 255, 255, 0.25);
+        }
+
+        .place-name {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.375rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 0.5rem;
+            line-height: 1.3;
+        }
+
+        .place-category {
+            color: var(--primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .place-address {
+            color: var(--gray-300);
+            margin-bottom: 1.5rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+        }
+
+        .place-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .rating {
+            background: var(--gradient-1);
+            color: var(--white);
+            padding: 0.375rem 0.875rem;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            box-shadow: var(--shadow);
+        }
+
+        .price {
+            color: var(--accent);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+
+        .distance {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .place-links {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .place-link {
+            padding: 0.625rem 1.25rem;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--white);
+            font-size: 0.875rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .place-link:hover {
+            background: var(--gradient-3);
+            border-color: transparent;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            backdrop-filter: blur(var(--blur));
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: var(--error);
+            padding: 2rem;
+            border-radius: 16px;
+            text-align: center;
+            margin: 2rem 0;
+            font-weight: 500;
+            font-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+
+            .nav-bar {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .nav-actions {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .search-form {
+                padding: 2rem;
+                border-radius: 16px;
+            }
+
+            .header {
+                margin-bottom: 3rem;
+                padding: 2rem 0;
+            }
+
+            .mood-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .place-card {
+                padding: 1.5rem;
+            }
+
+            .results-header {
+                padding: 2rem 1.5rem;
+            }
+
+            .results-header h2 {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .place-type-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .mood-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .place-details {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .header h1 {
+                font-size: 3rem;
+            }
+
+            .search-form {
+                padding: 1.5rem;
+            }
+        }
+
+        .footer {
+            margin-top: 6rem;
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(var(--blur));
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .footer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 4rem;
+            padding: 4rem 2rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .footer-brand {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-logo-icon {
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-hero);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .footer-logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: var(--gradient-hero);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .footer-description {
+            color: var(--gray-300);
+            font-size: 1rem;
+            line-height: 1.6;
+            max-width: 320px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .social-link {
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1.2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .social-link:hover {
+            background: var(--gradient-3);
+            border-color: transparent;
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .footer-links {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .footer-column-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+        }
+
+        .footer-column-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 30px;
+            height: 2px;
+            background: var(--gradient-1);
+            border-radius: 1px;
+        }
+
+        .footer-link-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .footer-link {
+            color: var(--gray-300);
+            text-decoration: none;
+            font-size: 0.9rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            padding: 0.25rem 0;
+            position: relative;
+        }
+
+        .footer-link:hover {
+            color: var(--white);
+            transform: translateX(4px);
+        }
+
+        .newsletter-text {
+            color: var(--gray-300);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .newsletter-form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .newsletter-input {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            color: var(--white);
+            font-size: 0.875rem;
+            font-weight: 400;
+            transition: all 0.3s ease;
+            font-family: inherit;
+        }
+
+        .newsletter-input:focus {
+            outline: none;
+            border-color: rgba(102, 126, 234, 0.5);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .newsletter-input::placeholder {
+            color: var(--gray-400);
+        }
+
+        .newsletter-btn {
+            padding: 0.875rem 1.5rem;
+            background: var(--gradient-2);
+            color: var(--white);
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: inherit;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .newsletter-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 2rem;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .footer-bottom-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .copyright {
+            color: var(--gray-400);
+            font-size: 0.875rem;
+            font-weight: 400;
+        }
+
+        .footer-bottom-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .footer-bottom-link {
+            color: var(--gray-400);
+            text-decoration: none;
+            font-size: 0.875rem;
+            font-weight: 400;
+            transition: color 0.3s ease;
+        }
+
+        .footer-bottom-link:hover {
+            color: var(--white);
+        }
+
+        /* Add these to your existing media queries */
+        @media (max-width: 768px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                padding: 3rem 1.5rem 2rem;
+            }
+
+            .footer-links {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 2rem;
+            }
+
+            .footer-bottom-content {
+                flex-direction: column;
+                text-align: center;
+                gap: 1.5rem;
+            }
+
+            .footer-bottom-links {
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .footer-links {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-social {
+                justify-content: center;
+            }
+
+            .footer-bottom-links {
+                flex-direction: column;
+                gap: 1rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <div class="nav-brand">
+                <div class="nav-logo">🍽️</div>
+                <div class="nav-title">Food Mood</div>
+            </div>
+            <div class="nav-actions">
+                <a href="/profile" class="nav-btn profile">👤 Profile</a>
+                <button class="nav-btn" onclick="logout()">🚪 Logout</button>
+            </div>
+        </div>
+
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">🍽️</div>
+            </div>
+            <h1>Food Mood</h1>
+            <p>Discover perfect places powered by AI mood detection</p>
+        </div>
+
+        <div class="search-form">
+            <div class="form-section">
+                <label>What experience are you craving?</label>
+                <div class="place-type-selector">
+                    <button type="button" class="place-type-btn active" data-type="restaurant">
+                        🍽️ Restaurants
+                    </button>
+                    <button type="button" class="place-type-btn" data-type="hotel">
+                        🏨 Hotels
+                    </button>
+                    <button type="button" class="place-type-btn" data-type="cafe">
+                        ☕ Cafés
+                    </button>
+                    <button type="button" class="place-type-btn" data-type="dhaba">
+                        🚚 Dhabas
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <label>What's your current vibe?</label>
+                <div class="mood-grid" id="mood-grid">
+                    <button type="button" class="mood-btn" data-mood="happy">😊 Euphoric</button>
+                    <button type="button" class="mood-btn" data-mood="sad">😢 Melancholic</button>
+                    <button type="button" class="mood-btn" data-mood="stressed">😰 Overwhelmed</button>
+                    <button type="button" class="mood-btn" data-mood="excited">🤩 Electrified</button>
+                    <button type="button" class="mood-btn" data-mood="tired">😴 Exhausted</button>
+                    <button type="button" class="mood-btn" data-mood="romantic">😍 Romantic</button>
+                    <button type="button" class="mood-btn" data-mood="social">👥 Sociable</button>
+                    <button type="button" class="mood-btn" data-mood="lazy">😎 Chill</button>
+                    <button type="button" class="mood-btn" data-mood="rainy">🌧️ Cozy</button>
+                    <button type="button" class="mood-btn" data-mood="hungry">🍽️ Ravenous</button>
+                    <button type="button" class="mood-btn" data-mood="travelling">🚗 Travelling</button>
+                    <button type="button" class="mood-btn" data-mood="nostalgic">🏠 Nostalgic</button>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <label>Where should we search?</label>
+                <div class="location-container">
+                    <input type="text" id="location" class="location-input"
+                        placeholder="Let us detect your location for the best results...">
+                    <button type="button" class="location-btn" onclick="getCurrentLocation()">📍 Detect</button>
+                </div>
+                <div class="location-status" id="location-status"></div>
+            </div>
+
+            <div class="form-section">
+                <label>Looking for something specific?</label>
+                <input type="text" id="custom-query" class="custom-input"
+                    placeholder="e.g., rooftop dining, boutique hotel, specialty coffee...">
+            </div>
+
+            <button class="search-btn" onclick="searchPlaces()">
+                ✨ Discover My Perfect Match
+            </button>
+        </div>
+
+        <div class="loading" id="loading" style="display: none;">
+            <div class="loading-spinner"></div>
+            <h3>AI is analyzing your mood...</h3>
+            <p>Finding the perfect places that match your energy</p>
+        </div>
+
+        <div class="error" id="error" style="display: none;"></div>
+
+        <div class="results" id="results">
+            <div class="results-header">
+                <h2 id="results-title">Your Perfect Matches</h2>
+                <p id="results-subtitle">Curated specifically for your mood and preferences</p>
+            </div>
+            <div class="results-grid" id="results-grid"></div>
+        </div>
+
+        <footer class="footer">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <div class="footer-logo">
+                        <div class="footer-logo-icon">🍽️</div>
+                        <div class="footer-logo-text">Food Mood</div>
+                    </div>
+                    <p class="footer-description">AI-powered mood-based discovery for the perfect dining and hospitality
+                        experiences.</p>
+                    <div class="footer-social">
+                        <a href="#" class="social-link" aria-label="Twitter">🐦</a>
+                        <a href="#" class="social-link" aria-label="Instagram">📷</a>
+                        <a href="#" class="social-link" aria-label="Facebook">📘</a>
+                        <a href="#" class="social-link" aria-label="LinkedIn">💼</a>
+                    </div>
+                </div>
+
+                <div class="footer-links">
+                    <div class="footer-column">
+                        <h4 class="footer-column-title">Product</h4>
+                        <ul class="footer-link-list">
+                            <li><a href="/features" class="footer-link">Features</a></li>
+                            <li><a href="/howwork" class="footer-link">How It Works</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4 class="footer-column-title">Support</h4>
+                        <ul class="footer-link-list">
+                            <li><a href="/help" class="footer-link">Help Center</a></li>
+                            <li><a href="/contact.html" class="footer-link">Contact Us</a></li>
+                            <li><a href="/feedback" class="footer-link">Feedback</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4 class="footer-column-title">Legal</h4>
+                        <ul class="footer-link-list">
+                            <li><a href="privacy.html" class="footer-link">Privacy Policy</a></li>
+                            <li><a href="terms.html" class="footer-link">Terms of Service</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="footer-column">
+                        <h4 class="footer-column-title">Newsletter</h4>
+                        <p class="newsletter-text">Get the latest updates on new features and mood-based
+                            recommendations.</p>
+                        <div class="newsletter-form">
+                            <input type="email" placeholder="Enter your email" class="newsletter-input">
+                            <button class="newsletter-btn" onclick="subscribeNewsletter()">Subscribe</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="footer-bottom">
+                <div class="footer-bottom-content">
+                    <p class="copyright">© 2025 Food Mood. All rights reserved. Made with ❤️ for food lovers.</p>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <script>
+        let selectedMood = '';
+        let selectedPlaceType = 'restaurant';
+        let userLatitude = null;
+        let userLongitude = null;
+        let locationDetected = false;
+
+        // Auto-detect location and initialize on page load
+        window.addEventListener('load', function () {
+            getCurrentLocation();
+            updateMoodButtons();
+            initializeInteractions();
+        });
+
+        function initializeInteractions() {
+            // Place type button interactions
+            document.querySelectorAll('.place-type-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.place-type-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedPlaceType = this.dataset.type;
+                    updateMoodButtons();
+                    selectedMood = '';
+                    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+                });
+            });
+
+            updateMoodButtonListeners();
+
+            // Enter key support
+            document.addEventListener('keypress', function (e) {
+                if (e.key === 'Enter') {
+                    searchPlaces();
+                }
+            });
+        }
+
+        function updateMoodButtons() {
+            const moodGrid = document.getElementById('mood-grid');
+            let moodButtons = '';
+
+            if (selectedPlaceType === 'hotel') {
+                moodButtons = `
+                    <button type="button" class="mood-btn" data-mood="happy">🎉 Celebration</button>
+                    <button type="button" class="mood-btn" data-mood="sad">🧘 Quiet Retreat</button>
+                    <button type="button" class="mood-btn" data-mood="stressed">💆 Spa & Wellness</button>
+                    <button type="button" class="mood-btn" data-mood="excited">🏔️ Adventure Base</button>
+                    <button type="button" class="mood-btn" data-mood="tired">🛌 Ultimate Comfort</button>
+                    <button type="button" class="mood-btn" data-mood="romantic">💕 Romantic Escape</button>
+                    <button type="button" class="mood-btn" data-mood="social">👨‍👩‍👧‍👦 Family Hub</button>
+                    <button type="button" class="mood-btn" data-mood="lazy">🏖️ Resort Paradise</button>
+                    <button type="button" class="mood-btn" data-mood="rainy">🏠 Indoor Haven</button>
+                    <button type="button" class="mood-btn" data-mood="hungry">🍽️ Culinary Hotel</button>
+                    <button type="button" class="mood-btn" data-mood="travelling">🚗 Transit Hotel</button>
+                    <button type="button" class="mood-btn" data-mood="nostalgic">🏰 Heritage & Classic</button>
+                `;
+            } else if (selectedPlaceType === 'dhaba') {
+                moodButtons = `
+                    <button type="button" class="mood-btn" data-mood="happy">🎉 Celebration Feast</button>
+                    <button type="button" class="mood-btn" data-mood="sad">🍛 Comfort Food</button>
+                    <button type="button" class="mood-btn" data-mood="stressed">🌶️ Spicy Relief</button>
+                    <button type="button" class="mood-btn" data-mood="excited">🔥 Authentic Flavors</button>
+                    <button type="button" class="mood-btn" data-mood="tired">☕ Chai & Paratha</button>
+                    <button type="button" class="mood-btn" data-mood="romantic">🥘 Traditional Date</button>
+                    <button type="button" class="mood-btn" data-mood="social">👥 Group Dining</button>
+                    <button type="button" class="mood-btn" data-mood="lazy">🛋️ Casual Vibes</button>
+                    <button type="button" class="mood-btn" data-mood="rainy">🌧️ Hot & Hearty</button>
+                    <button type="button" class="mood-btn" data-mood="hungry">🍗 Heavy Meals</button>
+                    <button type="button" class="mood-btn" data-mood="travelling">🛣️ Highway Dhaba</button>
+                    <button type="button" class="mood-btn" data-mood="nostalgic">🏠 Village Style</button>
+                `;
+            } else if (selectedPlaceType === 'cafe') {
+                moodButtons = `
+                    <button type="button" class="mood-btn" data-mood="happy">☕ Celebratory Brew</button>
+                    <button type="button" class="mood-btn" data-mood="sad">🫖 Comfort Tea</button>
+                    <button type="button" class="mood-btn" data-mood="stressed">🌿 Herbal Calm</button>
+                    <button type="button" class="mood-btn" data-mood="excited">⚡ Energy Boost</button>
+                    <button type="button" class="mood-btn" data-mood="tired">💪 Strong Coffee</button>
+                    <button type="button" class="mood-btn" data-mood="romantic">💕 Intimate Café</button>
+                    <button type="button" class="mood-btn" data-mood="social">👥 Social Hub</button>
+                    <button type="button" class="mood-btn" data-mood="lazy">😌 Cozy Corner</button>
+                    <button type="button" class="mood-btn" data-mood="rainy">🌧️ Warm Hideaway</button>
+                    <button type="button" class="mood-btn" data-mood="hungry">🥐 Coffee & Pastries</button>
+                    <button type="button" class="mood-btn" data-mood="travelling">🚗 Drive-thru Coffee</button>
+                    <button type="button" class="mood-btn" data-mood="nostalgic">🏠 Traditional Café</button>
+                `;
+            } else {
+                moodButtons = `
+                    <button type="button" class="mood-btn" data-mood="happy">😊 Euphoric</button>
+                    <button type="button" class="mood-btn" data-mood="sad">😢 Melancholic</button>
+                    <button type="button" class="mood-btn" data-mood="stressed">😰 Overwhelmed</button>
+                    <button type="button" class="mood-btn" data-mood="excited">🤩 Electrified</button>
+                    <button type="button" class="mood-btn" data-mood="tired">😴 Exhausted</button>
+                    <button type="button" class="mood-btn" data-mood="romantic">😍 Romantic</button>
+                    <button type="button" class="mood-btn" data-mood="social">👥 Sociable</button>
+                    <button type="button" class="mood-btn" data-mood="lazy">😎 Chill</button>
+                    <button type="button" class="mood-btn" data-mood="rainy">🌧️ Cozy</button>
+                    <button type="button" class="mood-btn" data-mood="hungry">🍽️ Ravenous</button>
+                    <button type="button" class="mood-btn" data-mood="travelling">🚗 Travelling</button>
+                    <button type="button" class="mood-btn" data-mood="nostalgic">🏠 Nostalgic</button>
+                `;
+            }
+
+            moodGrid.innerHTML = moodButtons;
+            updateMoodButtonListeners();
+        }
+
+        function updateMoodButtonListeners() {
+            document.querySelectorAll('.mood-btn').forEach(btn => {
+                btn.addEventListener('click', function () {
+                    document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    selectedMood = this.dataset.mood;
+                });
+            });
+        }
+
+        function getCurrentLocation() {
+            const locationStatus = document.getElementById('location-status');
+            const locationInput = document.getElementById('location');
+
+            if (!navigator.geolocation) {
+                locationStatus.textContent = 'Geolocation is not supported by this browser';
+                locationStatus.className = 'location-status error';
+                return;
+            }
+
+            locationStatus.textContent = 'Detecting your location...';
+            locationStatus.className = 'location-status loading';
+
+            navigator.geolocation.getCurrentPosition(
+                function (position) {
+                    userLatitude = position.coords.latitude;
+                    userLongitude = position.coords.longitude;
+                    locationDetected = true;
+
+                    locationInput.placeholder = `Location detected (${userLatitude.toFixed(4)}, ${userLongitude.toFixed(4)})`;
+                    locationStatus.textContent = 'Location detected successfully!';
+                    locationStatus.className = 'location-status success';
+
+                    setTimeout(() => {
+                        locationStatus.style.display = 'none';
+                    }, 3000);
+                },
+                function (error) {
+                    let errorMessage = '';
+                    switch (error.code) {
+                        case error.PERMISSION_DENIED:
+                            errorMessage = 'Location access denied. Please enter location manually.';
+                            break;
+                        case error.POSITION_UNAVAILABLE:
+                            errorMessage = 'Location information unavailable.';
+                            break;
+                        case error.TIMEOUT:
+                            errorMessage = 'Location request timeout.';
+                            break;
+                        default:
+                            errorMessage = 'An unknown error occurred.';
+                            break;
+                    }
+                    locationStatus.textContent = errorMessage;
+                    locationStatus.className = 'location-status error';
+                    locationInput.placeholder = 'Enter your location (e.g., Mumbai, India)';
+                }
+            );
+        }
+
+        function searchPlaces() {
+            const location = document.getElementById('location').value.trim();
+            const customQuery = document.getElementById('custom-query').value.trim();
+
+            // For dhabas, mood is optional - we'll find all nearby dhabas
+            if (selectedPlaceType !== 'dhaba' && !selectedMood) {
+                alert('Please select your current mood');
+                return;
+            }
+
+            if (!location && !locationDetected) {
+                alert('Please enter a location or enable location detection');
+                return;
+            }
+
+            // Show loading state
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('results').style.display = 'none';
+            document.getElementById('error').style.display = 'none';
+
+            // Prepare data for API
+            const searchData = {
+                mood: selectedMood,
+                location: location,
+                custom_query: customQuery,
+                place_type: selectedPlaceType,
+                latitude: userLatitude,
+                longitude: userLongitude
+            };
+
+            // Make API request
+            fetch('/api/search', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(searchData)
+            })
+                .then(response => {
+                    if (response.status === 401) {
+                        window.location.href = '/login';
+                        return;
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    if (!data) return;
+
+                    document.getElementById('loading').style.display = 'none';
+
+                    if (data.success) {
+                        displayResults(data);
+                    } else {
+                        showError(data.message || 'Failed to fetch results');
+                    }
+                })
+                .catch(error => {
+                    document.getElementById('loading').style.display = 'none';
+                    showError('Network error occurred. Please try again.');
+                    console.error('Error:', error);
+                });
+        }
+
+        function displayResults(data) {
+            const resultsTitle = document.getElementById('results-title');
+            const resultsSubtitle = document.getElementById('results-subtitle');
+            const resultsGrid = document.getElementById('results-grid');
+
+            // Update header based on place type
+            if (selectedPlaceType === 'dhaba') {
+                resultsTitle.textContent = `Nearby Dhabas`;
+                resultsSubtitle.textContent = `Found ${data.count} dhabas ${data.used_coordinates ? 'near you' : 'in ' + data.location}`;
+            } else {
+                resultsTitle.textContent = `Perfect ${selectedPlaceType} matches for your ${selectedMood} mood`;
+                resultsSubtitle.textContent = `Found ${data.count} places ${data.used_coordinates ? 'near you' : 'in ' + data.location}`;
+            }
+
+            // Clear previous results
+            resultsGrid.innerHTML = '';
+
+            if (data.places && data.places.length > 0) {
+                data.places.forEach(place => {
+                    const placeCard = createPlaceCard(place);
+                    resultsGrid.appendChild(placeCard);
+                });
+
+                document.getElementById('results').style.display = 'block';
+            } else {
+                showError('No places found matching your criteria. Try adjusting your search.');
+            }
+        }
+        // Newsletter subscription function
+        async function subscribeNewsletter() {
+            const emailInput = document.querySelector('.newsletter-input');
+            const submitBtn = document.querySelector('.newsletter-btn');
+            const email = emailInput.value.trim();
+
+            if (!email) {
+                alert('Please enter your email address');
+                return;
+            }
+
+            // Basic email validation
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                alert('Please enter a valid email address');
+                return;
+            }
+
+            // Show loading state
+            const originalText = submitBtn.textContent;
+            submitBtn.textContent = 'Subscribing...';
+            submitBtn.disabled = true;
+
+            try {
+                const response = await fetch('/api/newsletter', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ email: email })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    alert('Thank you for subscribing! Check your email for confirmation.');
+                    emailInput.value = '';
+                } else {
+                    alert(result.message || 'Subscription failed. Please try again.');
+                }
+            } catch (error) {
+                console.error('Newsletter subscription error:', error);
+                alert('Network error. Please try again.');
+            } finally {
+                // Reset button state
+                submitBtn.textContent = originalText;
+                submitBtn.disabled = false;
+            }
+        }
+        function createPlaceCard(place) {
+            const card = document.createElement('div');
+            card.className = 'place-card';
+
+            const ratingDisplay = place.rating ? `⭐ ${place.rating}` : 'No rating';
+            const priceDisplay = place.price ? '💰'.repeat(place.price) : 'Price not available';
+            const distanceDisplay = place.distance ? `${place.distance}km away` : '';
+
+            card.innerHTML = `
+                <div class="place-name">${place.name}</div>
+                <div class="place-category">${place.category}</div>
+                <div class="place-address">${place.address}</div>
+                <div class="place-details">
+                    <span class="rating">${ratingDisplay}</span>
+                    <span class="price">${priceDisplay}</span>
+                    <span class="distance">${distanceDisplay}</span>
+                </div>
+                <div class="place-links">
+                    ${place.website ? `<a href="${place.website}" target="_blank" class="place-link">Website</a>` : ''}
+                    ${place.phone ? `<a href="tel:${place.phone}" class="place-link">Call</a>` : ''}
+                    <a href="https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(place.name + ' ' + place.address)}" target="_blank" class="place-link">Directions</a>
+                </div>
+            `;
+
+            return card;
+        }
+        // Newsletter form enter key support
+        document.querySelector('.newsletter-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                subscribeNewsletter();
+            }
+        });
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+        }
+
+        async function logout() {
+            if (confirm('Are you sure you want to logout?')) {
+                try {
+                    const response = await fetch('/api/logout', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    const result = await response.json();
+                    if (result.success) {
+                        window.location.href = result.redirect || '/login';
+                    }
+                } catch (error) {
+                    console.error('Logout error:', error);
+                    window.location.href = '/login';
+                }
+            }
+        }
+    </script>
+</body>
+
+</html>
