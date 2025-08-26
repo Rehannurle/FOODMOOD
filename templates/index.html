@@ -1338,8 +1338,14 @@
         let userLongitude = null;
         let locationDetected = false;
 
-        // Auto-detect location and initialize on page load
         window.addEventListener('load', function () {
+            // Debug information
+            console.log('Debug Info:');
+            console.log('- Protocol:', location.protocol);
+            console.log('- Hostname:', location.hostname);
+            console.log('- Geolocation supported:', !!navigator.geolocation);
+            console.log('- HTTPS or localhost:', location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1');
+
             getCurrentLocation();
             updateMoodButtons();
             initializeInteractions();
@@ -1458,8 +1464,22 @@
                 return;
             }
 
+            // Check if page is served over HTTPS or localhost
+            if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+                locationStatus.textContent = 'Location detection requires HTTPS connection';
+                locationStatus.className = 'location-status error';
+                return;
+            }
+
             locationStatus.textContent = 'Detecting your location...';
             locationStatus.className = 'location-status loading';
+            locationStatus.style.display = 'block';
+
+            const options = {
+                enableHighAccuracy: false,  // Set to false for faster response
+                timeout: 15000,             // 15 second timeout
+                maximumAge: 600000          // Accept cached position up to 10 minutes old
+            };
 
             navigator.geolocation.getCurrentPosition(
                 function (position) {
@@ -1468,33 +1488,49 @@
                     locationDetected = true;
 
                     locationInput.placeholder = `Location detected (${userLatitude.toFixed(4)}, ${userLongitude.toFixed(4)})`;
-                    locationStatus.textContent = 'Location detected successfully!';
+                    locationStatus.textContent = `Location detected successfully! Accuracy: ±${Math.round(position.coords.accuracy)}m`;
                     locationStatus.className = 'location-status success';
+
+                    console.log('Location detected:', {
+                        lat: userLatitude,
+                        lng: userLongitude,
+                        accuracy: position.coords.accuracy
+                    });
 
                     setTimeout(() => {
                         locationStatus.style.display = 'none';
-                    }, 3000);
+                    }, 4000);
                 },
                 function (error) {
                     let errorMessage = '';
+                    let troubleshooting = '';
+
+                    console.error('Geolocation error:', error);
+
                     switch (error.code) {
                         case error.PERMISSION_DENIED:
-                            errorMessage = 'Location access denied. Please enter location manually.';
+                            errorMessage = 'Location access denied.';
+                            troubleshooting = 'Please click the location icon in your browser address bar and allow location access.';
                             break;
                         case error.POSITION_UNAVAILABLE:
-                            errorMessage = 'Location information unavailable.';
+                            errorMessage = 'Location unavailable.';
+                            troubleshooting = 'Please check your internet connection and GPS settings.';
                             break;
                         case error.TIMEOUT:
-                            errorMessage = 'Location request timeout.';
+                            errorMessage = 'Location request timed out.';
+                            troubleshooting = 'Please try again or enter your location manually.';
                             break;
                         default:
-                            errorMessage = 'An unknown error occurred.';
+                            errorMessage = 'Location detection failed.';
+                            troubleshooting = 'Please enter your location manually.';
                             break;
                     }
-                    locationStatus.textContent = errorMessage;
+
+                    locationStatus.innerHTML = `${errorMessage}<br><small style="font-size: 0.8em; opacity: 0.8;">${troubleshooting}</small>`;
                     locationStatus.className = 'location-status error';
                     locationInput.placeholder = 'Enter your location (e.g., Mumbai, India)';
-                }
+                },
+                options
             );
         }
 
